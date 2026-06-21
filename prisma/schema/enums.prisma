@@ -1,0 +1,34 @@
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  SELLER
+  STUDENT
+}
+
+enum BookCopyStatus {
+  AVAILABLE
+  BORROWED
+  RESERVED
+  DAMAGED
+  LOST
+}
+
+enum BorrowStatus {
+  ONGOING
+  RETURNED
+  OVERDUE
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}

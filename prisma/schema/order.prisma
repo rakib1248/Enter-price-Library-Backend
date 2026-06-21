@@ -1,0 +1,20 @@
+model Order {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  totalAmount Decimal
+  status      OrderStatus @default(PENDING)
+  items       OrderItem[]
+  payment     Payment?
+  createdAt   DateTime    @default(now())
+}
+
+model OrderItem {
+  id       String  @id @default(uuid())
+  orderId  String
+  order    Order   @relation(fields: [orderId], references: [id])
+  bookId   String
+  book     Book    @relation(fields: [bookId], references: [id])
+  quantity Int
+  price    Decimal // price at time of purchase
+}

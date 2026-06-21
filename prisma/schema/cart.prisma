@@ -1,0 +1,15 @@
+model Cart {
+  id     String     @id @default(uuid())
+  userId String     @unique
+  user   User       @relation(fields: [userId], references: [id])
+  items  CartItem[]
+}
+
+model CartItem {
+  id       String @id @default(uuid())
+  cartId   String
+  cart     Cart   @relation(fields: [cartId], references: [id])
+  bookId   String
+  book     Book   @relation(fields: [bookId], references: [id])
+  quantity Int    @default(1)
+}

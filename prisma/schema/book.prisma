@@ -1,0 +1,35 @@
+model Book {
+  id              String   @id @default(uuid())
+  title           String
+  isbn            String   @unique
+  description     String?
+  coverImage      String?
+  price           Decimal  // buy price
+  isForSale       Boolean  @default(true)
+  isForBorrow     Boolean  @default(true)
+  authorId        String
+  author          Author    @relation(fields: [authorId], references: [id])
+  categoryId      String
+  category        Category  @relation(fields: [categoryId], references: [id])
+  publisherId     String?
+  publisher       Publisher? @relation(fields: [publisherId], references: [id])
+  sellerId        String
+  seller          User      @relation("SellerBooks", fields: [sellerId], references: [id])
+
+  copies          BookCopy[]
+  orderItems      OrderItem[]
+  cartItems       CartItem[]
+  reviews         Review[]
+  createdAt       DateTime @default(now())
+}
+
+
+model BookCopy {
+  id         String         @id @default(uuid())
+  bookId     String
+  book       Book           @relation(fields: [bookId], references: [id])
+  copyNumber String
+  status     BookCopyStatus @default(AVAILABLE)
+
+  borrowRecords BorrowRecord[]
+}

@@ -1,0 +1,8 @@
+model Membership {
+  id              String   @id @default(uuid())
+  name            String   // e.g. "Basic", "Premium"
+  price           Decimal
+  durationInDays  Int
+  maxBorrowLimit  Int
+  subscriptions   Subscription[]
+}

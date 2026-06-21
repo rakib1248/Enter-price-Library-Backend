@@ -1,0 +1,11 @@
+model Subscription {
+  id           String             @id @default(uuid())
+  userId       String
+  user         User               @relation(fields: [userId], references: [id])
+  membershipId String
+  membership   Membership         @relation(fields: [membershipId], references: [id])
+  startDate    DateTime           @default(now())
+  endDate      DateTime
+  status       SubscriptionStatus @default(ACTIVE)
+  payment      Payment?
+}

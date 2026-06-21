@@ -1,0 +1,12 @@
+model BorrowRecord {
+  id          String       @id @default(uuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id])
+  bookCopyId  String
+  bookCopy    BookCopy     @relation(fields: [bookCopyId], references: [id])
+  borrowDate  DateTime     @default(now())
+  dueDate     DateTime
+  returnDate  DateTime?
+  fineAmount  Decimal      @default(0)
+  status      BorrowStatus @default(ONGOING)
+}

@@ -1,0 +1,5 @@
+model Publisher {
+  id    String @id @default(uuid())
+  name  String
+  books Book[]
+}

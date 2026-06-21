@@ -1,0 +1,12 @@
+model Payment {
+  id             String   @id @default(uuid())
+  orderId        String?  @unique
+  order          Order?   @relation(fields: [orderId], references: [id])
+  subscriptionId String?  @unique
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  amount         Decimal
+  method         String   // bkash, card, sslcommerz etc
+  transactionId  String?
+  status         String   // SUCCESS, FAILED, PENDING
+  createdAt      DateTime @default(now())
+}
