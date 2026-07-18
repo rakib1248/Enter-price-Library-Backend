@@ -1,10 +1,10 @@
 name: Build, Push & Deploy
 
-
 on:
   push:
-    branches:
-      - main 
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/e-server
@@ -32,8 +32,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          # Oracle Free Tier ARM (aarch64) সার্ভারের জন্য arm64 build হচ্ছে
-          # যদি x86 সার্ভার ব্যবহার করেন, platforms: linux/amd64 করে দিন
           platforms: linux/arm64
           tags: |
             ${{ env.DOCKER_IMAGE }}:latest
