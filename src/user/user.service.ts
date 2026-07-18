@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto, CreateUserProfileDto } from './dto/create-user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
@@ -5,12 +6,49 @@ import { PrismaService } from '../prisma/prisma.service';
 
 import * as bcrypt from 'bcryptjs';
 import { UpdateProfileDto } from './dto/update-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class UserService {
-  constructor(readonly prisma: PrismaService) {}
+  constructor(
+    readonly prisma: PrismaService,
+    private jwtService: JwtService,
+    private mailService: MailService,
+  ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async createToken(cretaeUserDto: CreateUserDto) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: cretaeUserDto.email },
+    });
+
+    if (existingUser) {
+      throw new BadRequestException('User with this email already exists');
+    }
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedPassword = bcrypt.hashSync(cretaeUserDto.password, 12);
+
+    await this.mailService.sendOtp(cretaeUserDto.email, otpCode);
+
+    const token = this.jwtService.sign(
+      { ...cretaeUserDto, otp: otpCode, password: hashedPassword },
+      { expiresIn: '5m' },
+    );
+
+    return { token };
+  }
+
+  async create(token: string, otp: string) {
+    const createUserDto = this.jwtService.verify(token) as CreateUserDto;
+
+    if (!createUserDto) {
+      throw new BadRequestException('Invalid or expired token');
+    }
+
+    if (createUserDto.otp !== otp) {
+      throw new BadRequestException('Invalid OTP');
+    }
+
     const existingUser = await this.prisma.user.findUnique({
       where: { email: createUserDto.email },
     });
@@ -19,10 +57,12 @@ export class UserService {
       throw new BadRequestException('User with this email already exists');
     }
 
-    const hashedPassword = bcrypt.hashSync(createUserDto.password, 12);
-
     return await this.prisma.user.create({
-      data: { ...createUserDto, password: hashedPassword },
+      data: {
+        name: createUserDto.name,
+        email: createUserDto.email,
+        password: createUserDto.password,
+      },
     });
   }
 

@@ -1,24 +1,39 @@
 # Step 1: Build Stage
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci
+
+# pnpm অ্যাক্টিভেট করা
+ENV CI=true
+RUN corepack enable && corepack prepare pnpm@10.20.0 --activate
+ENV HUSKY=0
+
+
+COPY package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# ফ্রোজেন লকফাইল সহই ইন্সটল হবে, pnpm-workspace.yaml এ approve করা স্ক্রিপ্টগুলো ব্লক হবে না
+RUN pnpm install --frozen-lockfile
+
 COPY . .
-# prisma generate and build the application
+
+# prisma generate এবং build করা
 RUN npx prisma generate
-RUN npm run build
+RUN pnpm run build
+
+# devDependencies ছেঁটে ফেলা
+RUN pnpm prune --prod
 
 # Step 2: Run Stage
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-COPY package*.json ./
-# only install production dependencies
-RUN npm ci --only=production
 
-# only copy the built application and prisma folder
+# ফাইল ও নোড মডিউলস কপি করা
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/prisma.config.ts ./
 
 EXPOSE 5000
+
+CMD ["node", "dist/src/main.js"]

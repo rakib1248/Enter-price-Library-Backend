@@ -23,6 +23,9 @@ export class CreateUserDto {
   @IsOptional()
   phone?: string;
 
+  @IsOptional()
+  otp?: string;
+
   @IsEnum(['SUPER_ADMIN', 'ADMIN', 'SELLER', 'STUDENT'])
   @IsOptional()
   role?: 'SUPER_ADMIN' | 'ADMIN' | 'SELLER' | 'STUDENT';

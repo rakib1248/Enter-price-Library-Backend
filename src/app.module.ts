@@ -9,10 +9,12 @@ import { UserModule } from './user/user.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/global-error.handelar';
 import { MailService } from './mail/mail.service';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
     PrismaModule,
+    MailModule,
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,

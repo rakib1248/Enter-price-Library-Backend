@@ -20,10 +20,15 @@ import { CurrentUser } from './current-user.decorator';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Post('otpsend')
   @UsePipes(new ValidationPipe())
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  sendOtp(@Body() createUserDto: CreateUserDto) {
+    return this.userService.createToken(createUserDto);
+  }
+
+  @Post()
+  create(@Body() data: { token: string; otp: string }) {
+    return this.userService.create(data.token, data.otp);
   }
 
   @Post('profile')
@@ -36,12 +41,13 @@ export class UserController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   findAll() {
     return this.userService.findAll();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }

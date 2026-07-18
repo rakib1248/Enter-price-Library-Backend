@@ -33,11 +33,7 @@ services:
     command: >
       sh -c "npx prisma generate && 
              npx prisma migrate deploy && 
-             node dist/main.js"
-    # Mount the current directory to /app in the container and exclude node_modules
-    volumes:
-      - .:/app
-      - /app/node_modules
+             node dist/src/main.js"
 
 # (Persistent Data)
 volumes:
