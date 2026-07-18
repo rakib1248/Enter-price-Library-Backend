@@ -5,9 +5,12 @@ model User {
   password      String
   phone         String?
   role          Role     @default(STUDENT)
+
+  refreshToken  String?
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
 
+  profile       Profile?
   books         Book[]            @relation("SellerBooks")
   borrowRecords BorrowRecord[]
   orders        Order[]
@@ -15,4 +18,19 @@ model User {
   reviews       Review[]
   cart          Cart?
   notifications Notification[]
+}
+
+
+model Profile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  dob       DateTime?
+  image     String?
+  bio       String?
+  address   String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

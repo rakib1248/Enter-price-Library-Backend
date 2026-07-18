@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database Service
+  postgres_db:
+    image: postgres:16-alpine
+    container_name: nestjs_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: mydbname
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. NestJS Backend Application Service
+  nestjs-app:
+    build: .
+    container_name: nestjs_backend
+    restart: always
+    ports:
+      - '5000:5000'
+    environment:
+      - NODE_ENV=production
+    # database connection settings from .env file
+    depends_on:
+      - postgres_db
+    env_file:
+      - .env
+
+    command: >
+      sh -c "npx prisma generate && 
+             npx prisma migrate deploy && 
+             node dist/main.js"
+    # Mount the current directory to /app in the container and exclude node_modules
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+# (Persistent Data)
+volumes:
+  postgres_data:

@@ -8,6 +8,7 @@ import { BookModule } from './book/book.module';
 import { UserModule } from './user/user.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/global-error.handelar';
+import { MailService } from './mail/mail.service';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AllExceptionsFilter } from './common/global-error.handelar';
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
+    MailService,
   ],
 })
 export class AppModule {}

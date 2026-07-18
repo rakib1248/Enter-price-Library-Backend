@@ -27,3 +27,21 @@ export class CreateUserDto {
   @IsOptional()
   role?: 'SUPER_ADMIN' | 'ADMIN' | 'SELLER' | 'STUDENT';
 }
+
+export class CreateUserProfileDto {
+  @IsString()
+  @IsOptional()
+  dob?: string; // Use string to represent DateTime in DTO
+
+  @IsString()
+  @IsOptional()
+  image?: string;
+
+  @IsString()
+  @IsOptional()
+  bio?: string;
+
+  @IsString()
+  @IsOptional()
+  address?: string;
+}

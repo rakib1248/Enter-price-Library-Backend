@@ -11,9 +11,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto, CreateUserProfileDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { UpdateProfileDto } from './dto/update-user.dto';
+import { CurrentUser } from './current-user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -23,6 +24,15 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
+  }
+
+  @Post('profile')
+  @UsePipes(new ValidationPipe())
+  createProfile(
+    @Body() createProfileDto: CreateUserProfileDto,
+    @CurrentUser() currentUser: { id: string },
+  ) {
+    return this.userService.createProfile(currentUser.id, createProfileDto);
   }
 
   @Get()
@@ -37,8 +47,8 @@ export class UserController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(id, updateUserDto);
+  update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
+    return this.userService.update(id, updateProfileDto);
   }
 
   @Delete(':id')
