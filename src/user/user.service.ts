@@ -8,6 +8,7 @@ import * as bcrypt from 'bcryptjs';
 import { UpdateProfileDto } from './dto/update-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from '../mail/mail.service';
+import { ResendService } from '../resend/resend.service';
 
 @Injectable()
 export class UserService {
@@ -15,6 +16,7 @@ export class UserService {
     readonly prisma: PrismaService,
     private jwtService: JwtService,
     private mailService: MailService,
+    private resendService: ResendService,
   ) {}
 
   async createToken(cretaeUserDto: CreateUserDto) {
@@ -81,7 +83,11 @@ export class UserService {
   }
 
   async findAll() {
-    return this.prisma.user.findMany({ include: { profile: true } });
+    return await this.resendService.sendEmail(
+      'rakib25059159@gmail.com',
+      'Test Email',
+    );
+    // return this.prisma.user.findMany({ include: { profile: true } });
   }
 
   async findOne(id: string) {

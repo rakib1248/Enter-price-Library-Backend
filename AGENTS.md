@@ -74,3 +74,4 @@
 - No Husky, lint-staged, or commit hooks
 - No `.env.example`
 - No `.nvmrc` / `.node-version`
+
